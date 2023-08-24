@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="hello">
+        <properties>
+            <!-- 필수 속성 -->
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"/>-->
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>-->
+            <!-- 옵션 -->
+            <property name="hibernate.show_sql" value="true"/> <!-- JPA에서 실행되는 쿼리를 console에 print로 찍어줌 -->
+            <property name="hibernate.format_sql" value="true"/> <!-- 위의 print 쿼리를 formatting해줌 -->
+            <property name="hibernate.use_sql_comments" value="true"/> <!-- 위의 print 쿼리가 왜 나오는지를 주석으로 알려줌 -->
+            <property name="hibernate.jdbc.batch_size" value="10"/> <!-- size만큼 모아서 DB에 보내고, 한방에 커밋 친다. buffed 기능 -->
+            <property name="hibernate.hbm2ddl.auto" value="create" /> <!-- 애플리케이션 실행 시drop table Member if exists후 새로 create -->
+<!--            <property name="hibernate.hbm2ddl.auto" value="create-drop" /> &lt;!&ndash; create와 같으나 종료시 다시 drop &ndash;&gt;-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="update" /> &lt;!&ndash; 변경분을 alter table, 지우는 것은 안됨. 추가하는 것만 됨(운영DB에는 사용X) &ndash;&gt;-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="validate" /> &lt;!&ndash; Entity와 Table이 정상 매핑 되었는지 확인 &ndash;&gt;-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="none" /> &lt;!&ndash; 주석해도 되지만, 이런 기능도 있다. &ndash;&gt;-->
+
+        </properties>
+    </persistence-unit>
+</persistence>
