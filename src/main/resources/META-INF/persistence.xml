@@ -17,7 +17,7 @@
             <property name="hibernate.format_sql" value="true"/> <!-- 위의 print 쿼리를 formatting해줌 -->
             <property name="hibernate.use_sql_comments" value="true"/> <!-- 위의 print 쿼리가 왜 나오는지를 주석으로 알려줌 -->
             <property name="hibernate.jdbc.batch_size" value="10"/> <!-- size만큼 모아서 DB에 보내고, 한방에 커밋 친다. buffed 기능 -->
-            <property name="hibernate.hbm2ddl.auto" value="create" /> <!-- 애플리케이션 실행 시drop table Member if exists후 새로 create -->
+            <property name="hibernate.hbm2ddl.auto" value="create" /> <!-- 애플리케이션 실행 시drop table Member_1 if exists후 새로 create -->
 <!--            <property name="hibernate.hbm2ddl.auto" value="create-drop" /> &lt;!&ndash; create와 같으나 종료시 다시 drop &ndash;&gt;-->
 <!--            <property name="hibernate.hbm2ddl.auto" value="update" /> &lt;!&ndash; 변경분을 alter table, 지우는 것은 안됨. 추가하는 것만 됨(운영DB에는 사용X) &ndash;&gt;-->
 <!--            <property name="hibernate.hbm2ddl.auto" value="validate" /> &lt;!&ndash; Entity와 Table이 정상 매핑 되었는지 확인 &ndash;&gt;-->
