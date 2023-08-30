@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -193,41 +194,66 @@ public class JpaMain {
    *             tx.commit();
    * */
 
+  /** Controller에서 Entity를 반환하면 절대 안됨
+   *
+   *         try{
+   *             //저장
+   *             Team team = new Team();
+   *             team.setName("TeamA");
+   *             em.persist(team);
+   *
+   *             Member member = new Member();
+   *             member.setName("member1");
+   * //            member.changeTeam(team); //**
+   *             em.persist(member);
+   *
+   *             team.addMember(member);
+   *
+   *
+   *             em.flush();
+   *             em.clear();  //이 두 과정 중요. DB에서 깔끔하게 값을 가져온 것.
+   *
+   *
+   * //            Member findMember = em.find(Member.class, member.getId()); //영속성 컨텍스트니까 1차 개시에서 가지고 온 것 !
+   * //            List<Member> members = findMember.getTeam().getMembers();
+   * //
+   * //            for(Member m : members) {
+   * //                System.out.println("m" + m.getName());
+   * //            }
+   *
+   *             Team findTeam = em.find(Team.class, team.getId()); //1차캐시
+   *             List<Member> members = findTeam.getMembers();
+   *
+   *             //TODO Member객체와 Team객체에서 각자 만든 toString 메서드 안에 둟의 객체가 둘 다 들어있음.
+   *             // SteakOverFlow err 를 발생. 양방향 매핑시에 무한 루프가 생겨버렸다. (toString(), lombok, JSON 생성 라이브러리)
+   *             // Controller에서 Entity를 반환하면 절대 안됨. (1. 무한루프, 2. Entity 변경/추가 시 API spec이 바뀌어버림. 갖다 쓰는 입장에서 황당한 일) runTime까지 안가고 Compile단계에서 err 내보냄
+   *             // DTO로 반환만 해줘야 한다.
+   *             System.out.println("findTeam = " + findTeam);
+   *
+   *             tx.commit();
+   * */
+
 
         try{
-            //저장
-            Team team = new Team();
-            team.setName("TeamA");
-            em.persist(team);
-
             Member member = new Member();
-            member.setName("member1");
-//            member.changeTeam(team); //**
+            member.setName("usr1");
+            member.setCreatedBy("kim");
+            member.setCreatedDate(LocalDateTime.now());
+
             em.persist(member);
 
-            team.addMember(member);
 
 
-            em.flush(); 
-            em.clear();  //이 두 과정 중요. DB에서 깔끔하게 값을 가져온 것.
+            Movie movie = new Movie();
+            movie.setDirector("aaaa");
+            movie.setActor("BBBB");
+            movie.setName("gggg");
+            movie.setPrice(10000);
 
+            em.persist(movie);
 
-/*
-            Member findMember = em.find(Member.class, member.getId()); //영속성 컨텍스트니까 1차 개시에서 가지고 온 것 !
-            List<Member> members = findMember.getTeam().getMembers();
-            
-            for(Member m : members) {
-                System.out.println("m" + m.getName());
-            }
-*/
-            Team findTeam = em.find(Team.class, team.getId()); //1차캐시
-            List<Member> members = findTeam.getMembers();
-
-            //TODO Member객체와 Team객체에서 각자 만든 toString 메서드 안에 둟의 객체가 둘 다 들어있음.
-            // SteakOverFlow err 를 발생. 양방향 매핑시에 무한 루프가 생겨버렸다. (toString(), lombok, JSON 생성 라이브러리)
-            // Controller에서 Entity를 반환하면 절대 안됨. (1. 무한루프, 2. Entity 변경/추가 시 API spec이 바뀌어버림. 갖다 쓰는 입장에서 황당한 일)
-            // DTO로 반환만 해줘야 한다.
-            System.out.println("findTeam = " + findTeam);
+            em.flush();
+            em.clear();
 
             tx.commit();
         } catch (Exception e) {

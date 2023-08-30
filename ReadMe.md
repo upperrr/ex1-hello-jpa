@@ -101,3 +101,48 @@ FK로 JOIN 하면 되기 때문에. 반대로도 가능한 것이다.
 - 양방향 매핑은 반대방향으로 조회(객체 그래프 탐색)기능이 추가된 것 뿐
 - JPQL에서 역방향으로 탐색할 일이 많음(참조할 일,,)
 - 단방향 매핑을 잘 하고 양방향은 필요할 때 추가해도 됨(테이블에 영향을 주지 않음, Entity에 코드만 몇줄 추가 하면 될 일)
+
+
+- - -
+
+
+### 다양한 연관관계 매핑
+
+- 다중성
+- 단방향, 양방향
+- 연관관계의 주인
+
+
+- 다대일 @ManyToOne
+- 일대다 @OneToMany : XXX
+- 일대일 @OneToOne
+- 다대다 @ManyToMany : XXX
+
+
+- 일대일 양방향 또는 다대일 양방향을 사용하자 (권장)
+- 다대다 :
+- - 애초애 RDB애서 표현 불가. 연결테이블(조인테이블)을 따로 두어 다대다 관계를 억지로 만들어 내야 함.
+- - 객체는 collection을 사용해서 2개의 객체로 다대다 관계를 만들 수 있음.
+
+- 웬만하면 PK는 의미 없는 값을 Generate Value로 사용해야 유연해 진다.
+
+
+### 상속관계 매핑
+
+- 관계형 데이터베이스는 상속관계 X
+- 슈퍼타입, 서브타입 관계라는 모델링 기법이 객체의 상속과 유사
+- 상속관계 매핑 : 객체의 상속구조 <-> DB의 슈퍼타입, 서브타입 관계를 매핑
+- 전략 : 단일테이블 or 조인테이블
+
+### @MappedSuperclass
+
+- 공통 매핑 정보가 필요할 때 사용(id, name)
+````
+  ex).
+  private String createdBy;
+  private LocalDateTime createdDate;
+  private String lastModifiedBy;
+  private LocalDateTime lastModifiedDate;
+````
+- RDB에서 지속적으로 넣어줬던 이런 것들... 객체로 하나 빼서 해당 어노테이션으로 가눙...! 
+

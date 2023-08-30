@@ -1,9 +1,10 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-public class Member {
+public class Member extends BaseEntity{
     @Id @GeneratedValue
     @Column(name = "MEMBER_ID")
     private Long id;
@@ -21,6 +22,12 @@ public class Member {
     @ManyToOne //Member입장에서 Many to One
     @JoinColumn(name = "TEAM_ID") //join column까지 명시.
     private Team team; //Team객체를 통째로 가져온다.
+
+    @OneToOne //ManyToOne  과 비슷하가.
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+
 
 
     public Long getId() {

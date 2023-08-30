@@ -18,9 +18,10 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-      <version>5.3.10.Final</version>
+      <version>5.4.13.Final</version>
     </dependency>
     <!-- H2 데이터베이스 -->
+    <!-- H2 1.4.200의 경우 Hibernate Err로 Table drop이 안될 수 있다. hibernate 5.4.13 또는 H2버전업을 진행 한다. -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
