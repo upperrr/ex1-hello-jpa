@@ -146,3 +146,53 @@ FK로 JOIN 하면 되기 때문에. 반대로도 가능한 것이다.
 ````
 - RDB에서 지속적으로 넣어줬던 이런 것들... 객체로 하나 빼서 해당 어노테이션으로 가눙...! 
 
+- - -
+## 프록시
+- em.find() vs em.getReference()
+- em.find() : 실제 Entity 조회
+- em.getReference() : 실제 Entity를 상속한 가짜 Entity
+- 영속성 컨텍스트를 통해서 초기화 요청 후 실제 Entity를 생성해서 조회 하는 것
+- Proxy는 객체 그 자체가 아니고 통해서 가져오기 때문에 ==비교 불가, instanceof를 사용 해야 함
+
+
+
+
+
+## 즉시로딩과 지연로딩
+- 즉시로딩 : EAGER
+- 지연로딩 : LAZY
+- 실무에서는 즉시로딩 XX. 가급적 지연로딩만 사용.
+- WHY?
+- - 즉시로딩을 적용하면, 전혀 예상치 못한 SQL이 나간다. (무수한 JOIN이...!)
+- - 즉시로딩은 JPQL에서 N+1의 문제를 일으킨다.
+- TODO!
+- - fetch join : runtime에 동적으로 선택하여 join (JPQL 추후설명)
+- - Entity Graph, Annotaion  (추후 설명)
+- - Batch size 등의 방법이 있다. (추후 설명)
+- WARN!
+- - @ManyToOne, @OneToOne 기본 : 즉시로딩 -->LAZY로 설정(필수)
+- - @OneToMany, @ManyToMany(XX) 기본 : 지연로딩
+- END..
+- - "그냥 지연로딩으로 다 바르고 시작 해야 한다"
+
+
+## 영속성전이 : CASCADE
+- 연관관계 매핑과는 아무 관련이 없음
+- ALL(모두적용) , PERSIST(영속 - 저장)
+- Parent와 Child가 같은 Life Cycle일 때, 단일소유 일때 사용.
+
+## 고아객체
+- 부모 엔티티와 연관관계가 끊어진 자식 엔티티를 자동으로 삭제하는 기능
+- orphanRemoval = true
+- 참조하는 곳이 하나일 때 (단일소유) 사용 ! (기본적으로 삭제이기에 조심)
+- 특정 엔티티가 개인소유할때 사용
+- @OneToOne, @OneToMany만 사용
+- CASCADE REMOVAL과 동일하게 작동. 부모가 없어지면 관련된 자식 전부 지워지기 때문
+
+## 영속성전이+고아객체, 생명주기
+- 스스로 생명주기를 관리하는 엔티티는 em.persist()로 영속화, em.remove()로 제거 --> 생명주기 관리
+- 두 옵션 모두 활성화 하면 부모 엔티티를 통해, 자식의 생명주기도 관리 가능
+- 도메인주도설계(DDD)의 Aggregate Root 개념 구현 시 유용 
+
+- - -
+

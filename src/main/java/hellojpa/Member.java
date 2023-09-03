@@ -19,8 +19,13 @@ public class Member extends BaseEntity{
     /** //TODO 객체지향적 설계를 해보자.
      * */
     //JPA에 어떤 관계인지 어노테이션으로 명시한다.
-    @ManyToOne //Member입장에서 Many to One
-    @JoinColumn(name = "TEAM_ID") //join column까지 명시.
+
+
+    //Member입장에서 Many to One
+    @ManyToOne(fetch = FetchType.LAZY) //지연로딩 : LAZY로 설정할 경우, 프록시로 조회한다
+//    @ManyToOne(fetch = FetchType.EAGER) //즉시로딩 : 조인쿼리로 한방쿼리로 진짜를 다 가져옴. 프록시 필요X . --> XXX
+    @JoinColumn
+//    @JoinColumn(name = "TEAM_ID") //join column까지 명시.
     private Team team; //Team객체를 통째로 가져온다.
 
     @OneToOne //ManyToOne  과 비슷하가.

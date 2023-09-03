@@ -233,27 +233,94 @@ public class JpaMain {
    *             tx.commit();
    * */
 
+  /** 프록시 관련 예제
+   *         try{
+   *
+   *             Member member = new Member();
+   *             member.setName("hello");
+   *
+   *             em.persist(member);
+   *
+   *             em.flush();
+   *             em.clear();
+   *
+   *
+   * //            printMemberAndTeam(member);
+   * //            printMember(member);
+   *
+   *
+   * //            /** 1 단계 : 단순 select 할 경우 select 쿼리야 당연히 나간다
+   * //             * Member findMember = em.find(Member.class, member.getId());
+   * //             * System.out.println("findMember.getId() = " + findMember.getId());
+   * //             * System.out.println("findMember.getName() = " + findMember.getName());
+   * //             *
+   *
+   *
+   * //            /** 2단계 : getReference 했을경우, 호출 시점에 DB에 쿼리를 날린다.
+   * //             *
+   * //             *             Member findMember = em.getReference(Member.class, member.getId());
+   * //             *             //select 쿼리가 안나감.
+   * //             *
+   * //             *             //Member가 아닌, Proxy클래스. Hibernate가 만든 가짜 Class가 출력 되는 것을 볼수 있다.
+   * //             *             System.out.println("findMember.getClass() = " + findMember.getClass()); //class hellojpa.Member$HibernateProxy$uk9Y77xu
+   * //             *             System.out.println("findMember.getId() = " + findMember.getId());   //실제 reference를 가지면서, 실제 값을 가져옴
+   * //             *             System.out.println("findMember.getName() = " + findMember.getName());
+   * //             *             //실제 사용 하려고 하면, select 쿼리가 나간다 !!
+   * //             *
+   * //             *             //Proxy는 객체 그 자체가 아니고 통해서 가져오기 때문에 ==비교 불가, instanceof를 사용 해야 함
+   * //             *
+   * */
+
+
+  /** 즉시로딩과 지연로딩
+   *
+   Team team = new Team();
+   team.setName("teamA");
+   em.persist(team);
+
+   Member member1 = new Member();
+   member1.setName("member1");
+   member1.setTeam(team);
+   em.persist(member1);
+
+
+   em.flush();
+   em.clear();
+
+   Member m = em.find(Member.class, member1.getId());
+
+   System.out.println("m.getTeam().getClass() = " + m.getTeam().getClass());
+   //class hellojpa.Team$HibernateProxy$cODrFl6c --> member를 조회한 쿼리는 나가지만, team은 프록시로 조회하고
+
+   System.out.println("=================");
+   m.getTeam().getName(); //초기화 --> 실제 Team을 사용 할때, 비로소 team에 대한 DB 조회 쿼리가 나간다. LAZY LOADING
+   System.out.println("m.getTeam().getName() = " + m.getTeam().getName()); //teamA --> 실제DB값. 진짜가 나온다.
+   System.out.println("=================");
+
+
+   //Member, Team 조회쿼리가 계속 두번 나갈 필요가 없다. 네트워크 두번 따로 타고. 성능상 손해.
+   * */
 
         try{
-            Member member = new Member();
-            member.setName("usr1");
-            member.setCreatedBy("kim");
-            member.setCreatedDate(LocalDateTime.now());
 
-            em.persist(member);
+            Child child1 = new Child();
+            Child child2 = new Child();
 
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
 
-
-            Movie movie = new Movie();
-            movie.setDirector("aaaa");
-            movie.setActor("BBBB");
-            movie.setName("gggg");
-            movie.setPrice(10000);
-
-            em.persist(movie);
+            em.persist(parent); //cascade로 child객체를 연관 지었을때, 3번써주는 것 처럼 3개 다 불러온다. 대댓글 알지?
+//            em.persist(child1);
+//            em.persist(child2); //3번 영속성을 불러주는 것 비효율적이고 귀찮다.
 
             em.flush();
             em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+            findParent.getChildList().remove(0);
+            //Delete Query 날라갑니다.
+
 
             tx.commit();
         } catch (Exception e) {
@@ -264,4 +331,20 @@ public class JpaMain {
   
         emf.close();
     }
+
+    private static void printMember(Member member) {
+        System.out.println("member.getName() = " + member.getName());
+    }
+
+    /** Team + Member 함께 가져오는 Method
+     * */
+    private static void printMemberAndTeam(Member member) {
+        String username = member.getName();
+        System.out.println("username = " + username);
+
+        Team team = member.getTeam();
+        System.out.println("team.getName() = " + team.getName());
+    }
+
+
 }
