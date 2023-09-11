@@ -14,14 +14,14 @@ public class Team {
 
     //Team(FK)에서 Member(PK)로의 이동은 Team의 입장에서 1:N 의 관계일 것이다.
     //mappedBy기 때문에 FK일것. update insert는 불가. select는 가능하다,.
-    @OneToMany(mappedBy = "team") //어디와의 관계인지 명시. team으로 mapping이 되어있다.
-    private List<Member> members = new ArrayList<>(); //ArrayList로 초기화 해서 list를 넣는것은 관례. null point나지 않기 위함.
+//    @OneToMany(mappedBy = "team") //어디와의 관계인지 명시. team으로 mapping이 되어있다.
+//    private List<Member> members = new ArrayList<>(); //ArrayList로 초기화 해서 list를 넣는것은 관례. null point나지 않기 위함.
 
 
-    public void addMember(Member member) {
-        member.setTeam(this);
-        members.add(member);
-    }
+//    public void addMember(Member member) {
+//        member.setTeam(this);
+//        members.add(member);
+//    }
     public Long getId() {
         return id;
     }
@@ -38,13 +38,13 @@ public class Team {
         this.name = name;
     }
 
-    public List<Member> getMembers() {
-        return members;
-    }
+//    public List<Member> getMembers() {
+//        return members;
+//    }
 
-    public void setMembers(List<Member> members) {
-        this.members = members;
-    }
+//    public void setMembers(List<Member> members) {
+//        this.members = members;
+//    }
 
 
 //    @Override

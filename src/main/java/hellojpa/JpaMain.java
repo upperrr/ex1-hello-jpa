@@ -6,6 +6,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -301,25 +302,79 @@ public class JpaMain {
    //Member, Team 조회쿼리가 계속 두번 나갈 필요가 없다. 네트워크 두번 따로 타고. 성능상 손해.
    * */
 
+  /** 고아객체
+   *             Child child1 = new Child();
+   *             Child child2 = new Child();
+   *
+   *             Parent parent = new Parent();
+   *             parent.addChild(child1);
+   *             parent.addChild(child2);
+   *
+   *             em.persist(parent); //cascade로 child객체를 연관 지었을때, 3번써주는 것 처럼 3개 다 불러온다. 대댓글 알지?
+   * //            em.persist(child1);
+   * //            em.persist(child2); //3번 영속성을 불러주는 것 비효율적이고 귀찮다.
+   *
+   *             em.flush();
+   *             em.clear();
+   *
+   *             Parent findParent = em.find(Parent.class, parent.getId());
+   *             findParent.getChildList().remove(0);
+   *             //Delete Query 날라갑니다.
+   *
+   * */
+
         try{
 
-            Child child1 = new Child();
-            Child child2 = new Child();
+            Member member = new Member();
+            member.setName("member1");
+            member.setHomeAddress(new Address("homeCity", "street", "10000"));
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
 
-            em.persist(parent); //cascade로 child객체를 연관 지었을때, 3번써주는 것 처럼 3개 다 불러온다. 대댓글 알지?
-//            em.persist(child1);
-//            em.persist(child2); //3번 영속성을 불러주는 것 비효율적이고 귀찮다.
+//            member.getAddressHistory().add(new Address("old1", "street", "10000"));
+//            member.getAddressHistory().add(new Address("old2", "street", "10000"));
+
+            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
+            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
+
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            Parent findParent = em.find(Parent.class, parent.getId());
-            findParent.getChildList().remove(0);
-            //Delete Query 날라갑니다.
+            System.out.println("======== START ========");
+            Member findMember= em.find(Member.class, member.getId());
+
+
+            //List와 Set은 기본값 Lazy 이기에 아래처럼 선택 해줘야 나오고, 위의 member는 embedded 이기에 그냥 나옴
+//            List<Address> addressHistory = findMember.getAddressHistory();
+//            for(Address address : addressHistory) {
+//                System.out.println("address.getCity() = " + address.getCity());
+//            }
+            
+            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+            for (String favoriteFood : favoriteFoods) {
+                System.out.println("favoriteFood = " + favoriteFood);
+            }
+
+            //수정해보기 homeCity --> newCity
+//            findMember.getHomeAddress().setCity("newCity"); //이렇게 하면 절대  XXXX
+            Address a = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode())); //가져와서 하나만 바꿔주기
+
+            //치킨 --> 한식
+            findMember.getFavoriteFoods().remove("치킨"); //값타입 이어서 지우고 다시 해줘야 함;
+            findMember.getFavoriteFoods().add("한식"); //컬렉션의 값만 바꾸어 줬는데 어떤 엔티티인지 JPA가 알아서 바꿔준다.
+
+            //주소 바꿔보기
+//            findMember.getAddressHistory().remove(new Address("old1","street", "10000")); //equals, hashCode제대로 안되있으면 안먹힌다!
+//            findMember.getAddressHistory().add(new Address("newCity1", "street", "10000"));
+//TODO 동작방식이 치킨 --> 한식과는 다르다. 주소 바꿔보기는 WHERE MEMBER_ID 를 DELETE 하고 INSERT 한다.
+//TODO 값타입 컬렉션에 변경사항이 발생하면, 주인 엔티티와 연관된 모든 데이터를 삭제 하고, 값타입 컬랙션에 있는 현재 값을 모두 다시 저장한다.
+
 
 
             tx.commit();
@@ -332,19 +387,19 @@ public class JpaMain {
         emf.close();
     }
 
-    private static void printMember(Member member) {
-        System.out.println("member.getName() = " + member.getName());
-    }
+//    private static void printMember(Member member) {
+//        System.out.println("member.getName() = " + member.getName());
+//    }
 
     /** Team + Member 함께 가져오는 Method
      * */
-    private static void printMemberAndTeam(Member member) {
-        String username = member.getName();
-        System.out.println("username = " + username);
-
-        Team team = member.getTeam();
-        System.out.println("team.getName() = " + team.getName());
-    }
+//    private static void printMemberAndTeam(Member member) {
+//        String username = member.getName();
+//        System.out.println("username = " + username);
+//
+//        Team team = member.getTeam();
+//        System.out.println("team.getName() = " + team.getName());
+//    }
 
 
 }
